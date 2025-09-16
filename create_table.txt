@@ -1,0 +1,146 @@
+
+CREATE TABLE "support_data_btc_-_bitcoin" (
+    id SERIAL PRIMARY KEY,
+    fio VARCHAR(255),
+    number VARCHAR(50),
+    date TEXT,
+    user_id VARCHAR(50),
+    application_amount TEXT,
+    token VARCHAR(50),
+    receipt_amount TEXT,
+    hash VARCHAR(255),
+    sender_address VARCHAR(255),
+    return_address VARCHAR(255),
+    return_hash VARCHAR(255),
+    return_done TEXT,
+    return_reason TEXT,
+    status VARCHAR(50)
+);
+
+CREATE TABLE "support_data_eth_-_ethereum" (
+    id SERIAL PRIMARY KEY,
+    fio VARCHAR(255),
+    number VARCHAR(50),
+    date TEXT,
+    user_id VARCHAR(50),
+    application_amount TEXT,
+    token VARCHAR(50),
+    receipt_amount TEXT,
+    hash VARCHAR(255),
+    sender_address VARCHAR(255),
+    return_address VARCHAR(255),
+    return_hash VARCHAR(255),
+    return_done TEXT,
+    return_reason TEXT,
+    status VARCHAR(50)
+);
+
+CREATE TABLE "support_data_usdt_(erc-20)" (
+    id SERIAL PRIMARY KEY,
+    fio VARCHAR(255),
+    number VARCHAR(50),
+    date TEXT,
+    user_id VARCHAR(50),
+    application_amount TEXT,
+    token VARCHAR(50),
+    receipt_amount TEXT,
+    hash VARCHAR(255),
+    sender_address VARCHAR(255),
+    return_address VARCHAR(255),
+    return_hash VARCHAR(255),
+    return_done TEXT,
+    return_reason TEXT,
+    status VARCHAR(50)
+);
+
+CREATE TABLE "support_data_trx_-_tron" (
+    id SERIAL PRIMARY KEY,
+    fio VARCHAR(255),
+    number VARCHAR(50),
+    date TEXT,
+    user_id VARCHAR(50),
+    application_amount TEXT,
+    token VARCHAR(50),
+    receipt_amount TEXT,
+    hash VARCHAR(255),
+    sender_address VARCHAR(255),
+    return_address VARCHAR(255),
+    return_hash VARCHAR(255),
+    return_done TEXT,
+    return_reason TEXT,
+    status VARCHAR(50)
+);
+
+CREATE TABLE "support_data_usdt_(trc-20)" (
+    id SERIAL PRIMARY KEY,
+    fio VARCHAR(255),
+    number VARCHAR(50),
+    date TEXT,
+    user_id VARCHAR(50),
+    application_amount TEXT,
+    token VARCHAR(50),
+    receipt_amount TEXT,
+    hash VARCHAR(255),
+    sender_address VARCHAR(255),
+    return_address VARCHAR(255),
+    return_hash VARCHAR(255),
+    return_done TEXT,
+    return_reason TEXT,
+    status VARCHAR(50)
+);
+
+CREATE TABLE "support_data_ton" (
+    id SERIAL PRIMARY KEY,
+    fio VARCHAR(255),
+    number VARCHAR(50),
+    date TEXT,
+    user_id VARCHAR(50),
+    application_amount TEXT,
+    token VARCHAR(50),
+    receipt_amount TEXT,
+    hash VARCHAR(255),
+    sender_address VARCHAR(255),
+    return_address VARCHAR(255),
+    return_hash VARCHAR(255),
+    return_done TEXT,
+    return_reason TEXT,
+    status VARCHAR(50),
+    memo TEXT
+);
+
+CREATE TABLE "support_data_usdt_(ton)" (
+    id SERIAL PRIMARY KEY,
+    fio VARCHAR(255),
+    number VARCHAR(50),
+    date TEXT,
+    user_id VARCHAR(50),
+    application_amount TEXT,
+    token VARCHAR(50),
+    receipt_amount TEXT,
+    hash VARCHAR(255),
+    sender_address VARCHAR(255),
+    return_address VARCHAR(255),
+    return_hash VARCHAR(255),
+    return_done TEXT,
+    return_reason TEXT,
+    status VARCHAR(50),
+    memo TEXT
+);
+
+CREATE TABLE "support_data_usdc_(erc-20)" (
+    id SERIAL PRIMARY KEY,
+    fio VARCHAR(255),
+    number VARCHAR(50),
+    date TEXT,
+    user_id VARCHAR(50),
+    application_amount TEXT,
+    token VARCHAR(50),
+    receipt_amount TEXT,
+    hash VARCHAR(255),
+    sender_address VARCHAR(255),
+    return_address VARCHAR(255),
+    return_hash VARCHAR(255),
+    return_done TEXT,
+    return_reason TEXT,
+    status VARCHAR(50)
+);
