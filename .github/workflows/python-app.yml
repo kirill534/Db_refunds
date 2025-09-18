@@ -11,24 +11,24 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/upload-artifact@v4
+        uses: actions/checkout@v3  # исправлено здесь
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'  # укажите вашу версию Python
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller  # или ваши зависимости
+          pip install pyinstaller
 
       - name: Build executable with PyInstaller
         run: |
           pyinstaller --onefile main.py
-          
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: macOS-executable
-          path: main  # путь к собранному файлу
+          path: dist/main  # путь к собранному файлу
