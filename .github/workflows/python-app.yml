@@ -25,7 +25,7 @@ jobs:
 
       - name: Build executable with PyInstaller
         run: |
-          pyinstaller --onefile main.py
+          pyinstaller --onefile --windowed --name=MyApp main.py
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
