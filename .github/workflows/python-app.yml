@@ -30,7 +30,7 @@ jobs:
           pyinstaller --onefile main.py
           
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macOS-executable
           path: dist/main  # путь к собранному файлу
