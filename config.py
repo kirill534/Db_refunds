@@ -1,6 +1,6 @@
 # support_app/config.py
 
-CONN_DB = "dbname=work1 user=postgres password=0843 host=localhost port=5432"
+CONN_DB = "dbname=db user=admin password=admin host=10.10.10.126 port=5432"
 
 # Связь листов и таблиц базы данных
 SHEET_TO_TABLE = {
