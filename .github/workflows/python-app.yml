@@ -35,7 +35,7 @@ jobs:
 
       - name: Remove quarantine attribute
         run: |
-          xattr -d com.apple.quarantine dist/main
+          xattr -d com.apple.quarantine dist/main || true
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
