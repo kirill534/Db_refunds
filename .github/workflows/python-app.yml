@@ -26,11 +26,16 @@ jobs:
 
       - name: Build executable with PyInstaller
         run: |
-          pyinstaller --onefile --windowed main.py
+          pyinstaller --onefile --windowed --distpath dist main.py
 
       - name: Make the executable executable
         run: |
           chmod +x dist/main
+          ls -l dist/main
+
+      - name: Remove quarantine attribute
+        run: |
+          xattr -d com.apple.quarantine dist/main
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
