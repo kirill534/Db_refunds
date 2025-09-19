@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # исправлено здесь
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -27,8 +27,12 @@ jobs:
         run: |
           pyinstaller --onefile --windowed main.py
 
+      - name: Make the executable executable
+        run: |
+          chmod +x dist/main
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: macOS-executable
-          path: dist/main  # путь к собранному файлу
+          path: dist/main
