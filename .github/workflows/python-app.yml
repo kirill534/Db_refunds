@@ -26,7 +26,7 @@ jobs:
 
       - name: Build executable with PyInstaller
         run: |
-          pyinstaller --onefile --windowed --distpath dist main.py
+          pyinstaller --onedir --windowed --distpath dist main.py
 
       - name: Make the executable executable
         run: |
