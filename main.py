@@ -1,6 +1,9 @@
 # main.py
 import sys
+from tkinter import messagebox
 from config import CONN_DB
+from copypaste import bind_copy_paste
+from export_to_excel import ExportToExcelTab
 from search_tab import SearchEditTab
 import support_form
 from db import Database
@@ -13,32 +16,6 @@ from traders_tab import TradersTab
 
 
 sys.excepthook = handle_exception
-
-def CopyPaste(e):
-    # Используем keycode и keysym для определения комбинации
-    if e.keycode == 86 and e.keysym.lower() != 'v':  # Ctrl+V
-        e.widget.event_generate('<<Paste>>')
-    elif e.keycode == 67 and e.keysym.lower() != 'c':  # Ctrl+C
-        e.widget.event_generate('<<Copy>>')
-    elif e.keycode == 88 and e.keysym.lower() != 'x':  # Ctrl+X
-        e.widget.event_generate('<<Cut>>')
-    elif e.keycode == 65 and e.keysym.lower() != 'a':  # Ctrl+A
-        try:
-            e.widget.focus_set()
-            # Для Text
-            if isinstance(e.widget, tk.Text):
-                e.widget.tag_add('sel', '1.0', 'end')
-            # Для Entry и Combobox
-            elif isinstance(e.widget, (tk.Entry, ttk.Combobox)):
-                e.widget.select_range(0, 'end')
-                e.widget.focus_set()
-        except:
-            pass
-        return 'break'
-
-def bind_copy_paste(widget):
-    # Обеспечим работу для всех нужных виджетов
-    widget.bind('<Control-Key>', CopyPaste)
 
 
 def main():
@@ -57,7 +34,7 @@ def main():
         db.connect()
         root = tk.Tk()
         root.title("Добавление данных в PostgreSQL")
-        root.geometry("1150x650")
+        root.geometry("1150x700")
 
         bind_copy_paste(root)
 
@@ -73,11 +50,24 @@ def main():
         search_tab = SearchEditTab(notebook, db)
         notebook.add(search_tab.frame, text="Поиск и редактирование")
 
+        export_tab = ExportToExcelTab(notebook, db, CONN_DB)
+        notebook.add(export_tab.frame, text="Экспорт в Excel")
+
         root.mainloop()
     except Exception as e:
-        print("Ошибка:", e)
+        messagebox.showerror("Ошибка при запуске", f"Произошла ошибка: {e}")
+        # Можно дополнительно логировать ошибку или выводить traceback
+        import traceback
+        traceback.print_exc()
     finally:
         db.close()
-
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        # Создаем скрышее окно, чтобы показать сообщение
+        root = tk.Tk()
+        root.withdraw()  # скрыть основное окно
+        messagebox.showerror("Критическая ошибка", f"Программа не может запуститься: {e}")
+        root.destroy()
+        sys.exit(1)
