@@ -2,9 +2,22 @@ import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import ttk, messagebox
 from psycopg2 import sql
+from copypaste import bind_copy_paste, limit_entry_length
 from db import Database
 from config import FIELDS_TS_ENG, FIELDS_TS_RU, SHEET_TO_TABLE, LIST_TOKEN
 from venv import logger
+
+from telegram_sender import send_telegram_message
+
+
+def find_duplicates(seq):
+    from collections import defaultdict
+    count = defaultdict(list)
+    for i, item in enumerate(seq):
+        count[item].append(i)
+    # оставляем только те, что встречаются более одного раза
+    return {k: v for k, v in count.items() if len(v) > 1}
+
 
 class TradersTab:
     """
@@ -52,6 +65,9 @@ class TradersTab:
 
         # Внутри этого фрейма размещаем кнопку
         ttk.Button(btn_frame, text="Обновить данные", command=self.load_data).pack(padx=5, pady=15)
+
+        self.info_label = ttk.Label(self.frame, text="", foreground="red")
+        self.info_label.pack(padx=5, pady=5)
 
         self.tree = ttk.Treeview(self.frame, columns=self.base_field_titles, show='headings')
         for col in self.base_field_titles:
@@ -112,6 +128,7 @@ class TradersTab:
     def load_data(self, event=None):
         """
         Загружает данные из выбранной таблицы базы данных и отображает их в таблице.
+        Также проверяет наличие одинаковых ID среди отображаемых данных.
         """
         sheet_name = self.sheet_var.get()
         table_name = SHEET_TO_TABLE.get(sheet_name)
@@ -131,9 +148,27 @@ class TradersTab:
                 cur.execute(query, ("Возврат не сделан",))
                 rows = cur.fetchall()
                 self.tree.delete(*self.tree.get_children())
+                id_list = []
                 for row in rows:
                     self.tree.insert('', 'end', values=row)
+                    # Предполагаем, что ID в первой колонке
+                    id_list.append(row[4])
                 self.auto_adjust_column_widths()
+
+                self.loaded_rows = rows
+
+                # Проверка на одинаковые ID
+                duplicates = find_duplicates(id_list)
+                if duplicates:
+                    msg = "Обнаружены одинаковые ID клиентов в выбраном листе:\n"
+                    for id_value, indices in duplicates.items():
+                        row_values = [self.loaded_rows[i][0] for i in indices]
+                        row_values_str = ', '.join(str(v) for v in row_values)
+                        msg += f"ID {id_value} встречается в строках: {row_values_str}\n"
+                    self.info_label.config(text=msg)
+                else:
+                    self.info_label.config(text="")
+
         except Exception as e:
             messagebox.showerror("Ошибка", str(e))
             logger.exception("Ошибка при загрузке данных трейдеров")
@@ -171,15 +206,21 @@ class TradersTab:
         for i, col in enumerate(columns):
             if col == "Статус":
                 combobox = ttk.Combobox(edit_win, text=col, values=["Возврат не сделан", "Возврат сделан"], width=48, state='readonly')
-                combobox.set(values[i])
+                #combobox.set(values[i])
+                combobox.set("Возврат сделан")
                 combobox.grid(row=i, column=1, padx=10, pady=5)
                 entries[col] = combobox
+                bind_copy_paste(combobox)
             else:
                 ttk.Label(edit_win, text=col).grid(row=i, column=0, padx=5, pady=5, sticky='e')
                 var = tk.StringVar(value=values[i])
                 entry = ttk.Entry(edit_win, textvariable=var, width=50)
+                limit_entry_length(entry, 125)
+                if i == 0:
+                    entry.config(state='readonly')
                 entry.grid(row=i, column=1, padx=5, pady=5)
                 entries[col] = (var, entry)
+                bind_copy_paste(entry)
 
         def save():
             """
@@ -192,10 +233,10 @@ class TradersTab:
                 value = self.get_entry_value(widget)
                 updated_data[self.title_to_field[col]] = value.strip()
             hash_value = self.get_entry_value(entries["ХЭШ ВОЗВРАТА"])
-            return_done_value = self.get_entry_value(entries["Возврат сделан (+)"])
+            return_done_value = self.get_entry_value(entries["Дата возврата"])
 
             if not hash_value or not return_done_value:
-                messagebox.showerror("Ошибка", "Поля 'ХЭШ ВОЗВРАТА' и 'Возврат сделан (+)' не могут быть пустыми.")
+                messagebox.showerror("Ошибка", "Поля 'ХЭШ ВОЗВРАТА' и 'Дата возврата' не могут быть пустыми.")
                 return
                     # Обновляем в базе
             selected_id = self.tree.focus()
@@ -219,6 +260,23 @@ class TradersTab:
                     )
                     cur.execute(query, list(updated_data.values()) + [record_id])
                 self.db.conn.commit()
+                if updated_data.get('status') == 'Возврат сделан':
+                    # Получаем выбранную строку
+                    #row = self.tree.item(selected_id, 'values')
+                    # ФИО во второй колонке (индекс 1)
+                    fio = updated_data.get('fio')
+                    return_hash = updated_data.get('return_hash')
+                    number = updated_data.get('number')
+                    user_id = updated_data.get('user_id')
+                    if fio:
+                        message = (
+                            f"Возврат выполнен ✅:\n"
+                            f"@{fio}\n"
+                            f"ID клиента: {user_id}\n"
+                            f"Заявка: {number}\n"
+                            f"Хэш возврата: {return_hash}"
+                        )
+                        send_telegram_message(message)
                 messagebox.showinfo("Успех", "Данные сохранены")
                 self.load_data()
                 edit_win.destroy()
