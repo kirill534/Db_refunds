@@ -3,6 +3,7 @@ import tkinter.font as tkFont
 from tkinter import ttk, messagebox
 import datetime
 from config import FIELDS_TS_ENG, FIELDS_TS_RU, LIST_TOKEN, SHEET_TO_TABLE
+from copypaste import bind_copy_paste, limit_entry_length
 import db
 import logging
 from psycopg2 import sql
@@ -233,12 +234,17 @@ class SearchEditTab:
                 combobox.set(values[i])
                 combobox.grid(row=i, column=1, padx=10, pady=5)
                 entries[col] = combobox
+                bind_copy_paste(combobox)
             else:
                 ttk.Label(edit_win, text=col).grid(row=i, column=0, padx=5, pady=5, sticky='e')
                 var = tk.StringVar(value=values[i])
                 entry = ttk.Entry(edit_win, textvariable=var, width=50)
+                limit_entry_length(entry, 125)
+                if i == 0:
+                    entry.config(state='readonly')
                 entry.grid(row=i, column=1, padx=5, pady=5)
                 entries[col] = (var, entry)
+                bind_copy_paste(entry)
 
         def save():
             """
